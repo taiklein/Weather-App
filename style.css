@@ -47,14 +47,91 @@
 .rainy-predawn{
     background: linear-gradient( to bottom, #030712, #111827)
 }
+.rainy-sunrise {
+    background: linear-gradient( to bottom, #3f5362, #71828a)
+}
+.rainy-day {
+    background: linear-gradient( to bottom, #4a5568, #2d3748)
+}
+.rainy-sunset {
+    background: linear-gradient( to bottom, #52616b, #3f474d)
+}
+.rainy-night {
+    background: linear-gradient( to bottom, #090d16, #1a202c)
+}
 
+/*Drizzle*/
+.drizzle-predawn {
+    background: linear-gradient( to bottom, #0f172a, #1e293b)
+}
+.drizzle-sunrise {
+    background: linear-gradient( to bottom, #607585, #cbd5e1)
+}
+.drizzle-day {
+    background: linear-gradient( to bottom, #a0aec0, #cbd5e0)
+}
+.drizzle-sunset {
+    background: linear-gradient( to bottom, #586a75, #536069)
+}
+.drizzle-night {
+    background: linear-gradient( to bottom, #1a365d, #0f172a)
+}
 
+/*Snowy*/
+.snowy-predawn {
+    background: linear-gradient( to bottom, #0f172a, #304a87)
+}
+.snowy-sunrise {
+    background: linear-gradient( to bottom, #71859a, #b7c3cb)
+}
+.snowy-day {
+    background: linear-gradient( to bottom, #bfdff5, #d3dce4)
+}
+.snowy-sunset {
+    background: linear-gradient( to bottom, #596b7a, #858694)
+}
+.snowy-night {
+    background: linear-gradient( to bottom, #304a87, #0f172a)
+}
+
+/*Thunderstorm*/
+.stormy-predawn {
+    background: linear-gradient( to bottom, #020617, #0f172a)
+}
+.stormy-sunrise {
+    background: linear-gradient( to bottom, #263746, #4b5963)
+}
+.stormy-day {
+    background: linear-gradient( to bottom, #1f2933, #3f4b55)
+}
+.stormy-sunset {
+    background: linear-gradient( to bottom, #252f3a, #2a272f)
+}
+.stormy-night {
+    background: linear-gradient( to bottom, #030712, #172554)
+}
+
+/*Foggy*/
+.foggy-predawn {
+    background: linear-gradient( to bottom, #111827, #374151)
+}
+.foggy-sunrise {
+    background: linear-gradient( to bottom, #687985, #a6afb2)
+}
+.foggy-day {
+    background: linear-gradient( to bottom, #b8c0c3, #d9dedf)
+}
+.foggy-sunset {
+    background: linear-gradient( to bottom, #5F6F79, #918b8d)
+}
+.foggy-night {
+    background: linear-gradient( to bottom, #111827, #1f2937)
+}
 
 body {
     background-color: black;
 }
 header {
-    background-color: blue;
     width: 100%;
     height: 45vh;
     text-align: center;
@@ -108,5 +185,4 @@ footer {
     text-align: center;
     padding: 6px;
     font-size: 1em;
-    background-color: red;
 }
