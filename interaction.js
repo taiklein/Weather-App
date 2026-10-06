@@ -1,100 +1,58 @@
-let shareLocation = confirm('Allow this website to access your location?');
+let shareLocation = confirm ('Allow this website to have access to your location?')
 
-let search = document.getElementById('search');
+const search = document.getElementById('search')
 
-    if (shareLocation) {
-        search.style.display = 'none';
+if (shareLocation) {
+    search.style.display = 'none'
 
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+    navigator.geolocation.getCurrentPosition(async (position) => {
+        let lat = position.coords.latitude
+        let lon = position.coords.longitude
 
-            console.log(latitude);
-            console.log(longitude);
+// reverse geocoding
 
-//get weather data
+        let geoResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`)
+        let geoData = await geoResponse.json()
 
-        const response = await fetch (
-                `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=weather_code,is_day&daily=sunrise,sunset`);
-                
-        const data = await response.json();
+        console.log("Geo Data:", geoData)
+// get weather data
+        let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+        let data = await response.json()
 
-//get the current weather info
+        const tempElement = document.getElementById('temperature')
+        tempElement.innerText = `${data.current_weather.temperature} °C`
 
-        const weatherCode = data.current.weather_code;
-        const isDay = data.current.is_day;
+        const cityElement = document.getElementById('cityName')
+        cityElement.innerText = geoData.city || geoData.locality || "My Location"
+    })
+} else {
+    search.style.display = 'block'
+}
 
-        console.log(weatherCode);
-        console.log(isDay)
+//Searching Manually
 
-// weather codes into weather names
+async function searchWeather() {
+    let inputElement = document.getElementById('city')
+    let cityName = inputElement.value
 
-        let weather;
+    if (!cityName) return
 
-        if (weatherCode === 0) {
-            weather = 'sunny';
-        } else if (weatherCode >= 1 && weatherCode <= 3) {
-            weather = 'cloudy'
-        } else if (weatherCode === 45 || weatherCode === 48) {
-            weather = 'foggy'
-        } else if (weatherCode >= 51 && weatherCode <= 57) {
-            weather = 'drizzle'
-        } else if ((weatherCode >= 61 && weatherCode <= 67) || (weatherCode >= 80 && weatherCode <= 82)) {
-            weather = 'rainy'    
-        } else if ((weatherCode >= 71 && weatherCode <= 77) || (weatherCode === 85 || weatherCode === 86)) {
-            weather = 'snowy'
-        } else if (weatherCode >= 95) {
-            weather = 'stormy'
-        }
+    let geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${cityName}&count=1`)
+    let geoData = await geoResponse.json()
 
-// time of the day
-        const now = new Date();
-
-        const sunrise = new Date(data.daily.sunrise[0]);
-        const sunset = new Date(data.daily.sunset[0]);
-
-        const sunriseStart = new Date(
-            sunrise.getTime() - 60 * 60 * 1000
-        );
-        const sunriseEnd = new Date(
-            sunrise.getTime() + 60 * 60 * 1000
-        );
-        const sunsetStart = new Date(
-            sunset.getTime() - 60 * 60 * 1000
-        );
-        const sunsetEnd = new Date(
-            sunset.getTime() + 60 * 60 * 1000
-        );
-
-        let timeOfDay;
-
-        if (now < sunriseStart) {
-            timeOfDay = 'predawn';
-        } else if (now >= sunriseStart && now < sunriseEnd) {
-            timeOfDay = 'sunrise';
-        } else if (now >= sunriseEnd && now < sunsetStart) {
-            timeOfDay = 'day';
-        } else if (now >= sunsetStart && now < sunsetEnd) {
-            timeOfDay = 'sunset';
-        } else {
-            timeOfDay = 'night';
-        }
-
-// body class
-        const backgroundClass = `${weather}-${timeOfDay}`;
-        
-        document.body.className = backgroundClass;
-
-        console.log('Weather:', weather);
-        console.log('Time:', timeOfDay);
-        console.log('Body class:', backgroundClass);
-
-    }, (error) => {
-        console.log('Location error:', error);
-
-        search.style.display = 'block';
-    });
-
-    } else {
-        search.style.display = 'block';
+    if (!geoData.results || geoData.results.length === 0) {
+        alert("City not found!")
+        return
     }
+
+
+    let lat = geoData.results[0].latitude
+    let lon = geoData.results[0].longitude
+    let realCityName = geoData.results[0].name
+
+    let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
+    let data = await response.json()
+
+    document.getElementById('cityName').innerText = realCityName
+    document.getElementById('temperature').innerText = `${data.current_weather.temperature} °C`
+}
