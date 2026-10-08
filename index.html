@@ -7,13 +7,15 @@
     <link rel="shortcut icon" href="weather.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="medias.css">
-    <script src="https://kit.fontawesome.com/db09709f66.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header>
         <h1 id="temperature"></h1>
         <p id="cityName"></p>
-        <img id="weatherIcon" src="" alt="weather icon">
+        <p id="country"></p>
+        <i id="weatherIcon" class=""></i>
+        <p id="weatherText"></p>
         <div id="search">
             <input type="text" name="city" id="city" placeholder="Search for a city">
             <button onclick="searchWeather()">Search</button>
