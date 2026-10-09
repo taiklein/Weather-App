@@ -16,7 +16,7 @@ if (shareLocation) {
 
 // get weather data
 
-        let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`)
+        let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
         let data = await response.json()
 
         const tempElement = document.getElementById('temperature')
@@ -28,7 +28,9 @@ if (shareLocation) {
         const countryElement = document.getElementById('country')
         countryElement.innerText = geoData.countryName
 
-        weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day)
+        weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day, data.current_weather.time, data.daily)
+
+        hourly(data.hourly, data.current_weather.time)
     })
 
 } else {
@@ -57,19 +59,21 @@ async function searchWeather() {
     let realCityName = geoData.results[0].name
     let realCountryName = geoData.results[0].country
 
-    let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&timezone=auto`)
+    let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
     let data = await response.json()
 
     document.getElementById('temperature').innerText = `${data.current_weather.temperature} °C`
     document.getElementById('cityName').innerText = realCityName
     document.getElementById('country').innerText = realCountryName
 
-    weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day)
+    weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day, data.current_weather.time, data.daily,)
+
+    hourly(data.hourly, data.current_weather.time)
 }
 
 // weather description and icons
 
-function weatherDisplay(code, isDay){
+function weatherDisplay(code, isDay, timeString, dailyData,){
 
     let weatherDescription = ""
     let iconClass = ""
@@ -78,94 +82,227 @@ function weatherDisplay(code, isDay){
         case 0:
             weatherDescription = "Clear Sky"
             iconClass = (isDay === 1) ? "fa-solid fa-sun" : "fa-solid fa-moon"
+            weatherPrefix = "sunny"
             break
 
         case 1:
             weatherDescription = "Mostly Clear"
             iconClass = (isDay === 1) ? "fa-solid fa-cloud-sun" : "fa-solid fa-cloud-moon"
+            weatherPrefix = "sunny"
             break
 
         case 2:
             weatherDescription = "Partly Cloudy"
             iconClass = (isDay === 1) ? "fa-solid fa-cloud-sun" : "fa-solid fa-cloud-moon"
+            weatherPrefix = "cloudy"
             break
 
         case 3:
             weatherDescription = "Cloudy"
             iconClass = "fa-solid fa-cloud"
+            weatherPrefix = "cloudy"
             break 
 
         case 45:
             weatherDescription = "Foggy"
             iconClass = "fa-solid fa-smog"
+            weatherPrefix = "foggy"
             break
 
         case 48:
             weatherDescription = "Freezing Fog"
             iconClass = "fa-solid fa-smog"
+            weatherPrefix = "foggy"
             break
 
         case 51:
             weatherDescription = "Light Drizzle"
             iconClass = "fa-solid fa-cloud-rain"
+            weatherPrefix = "drizzle"
             break
     
         case 53:
             weatherDescription = "Drizzle"
             iconClass = "fa-solid fa-cloud-rain"
+            weatherPrefix = "drizzle"
             break
 
         case 55:
             weatherDescription = "Heavy Drizzle"
             iconClass = "fa-solid fa-cloud-rain"
+            weatherPrefix = "drizzle"
             break
         
         case 61:
             weatherDescription = "Light Rain"
             iconClass = "fa-solid fa-cloud-showers-heavy"
+            weatherPrefix = "rainy"
             break
         
         case 63:
             weatherDescription = "Rain"
             iconClass = "fa-solid fa-cloud-showers-heavy"
+            weatherPrefix = "rainy"
             break
 
         case 65:
             weatherDescription = "Heavy Rain"
             iconClass = "fa-solid fa-cloud-showers-heavy"
+            weatherPrefix = "rainy"
             break
 
         case 71:
             weatherDescription = "Light Snow"
             iconClass = "fa-regular fa-snowflake"
+            weatherPrefix = "snowy"
             break
 
         case 73:
             weatherDescription = "Snow"
             iconClass = "fa-regular fa-snowflake"
+            weatherPrefix = "snowy"
             break
 
         case 75:
             weatherDescription = "Heavy Snow"
             iconClass = "fa-regular fa-snowflake"
+            weatherPrefix = "snowy"
             break
 
         case 95:
             weatherDescription = "Thunderstorm"
             iconClass = "fa-regular fa-cloud-bolt"
+            weatherPrefix = "stormy"
             break
 
         case 96:
             weatherDescription = "Thunderstorm with Light Hail"
             iconClass = "fa-regular fa-cloud-bolt"
+            weatherPrefix = "stormy"
             break
 
         case 99:
             weatherDescription = "Thunderstorm with Heavy Hail"
             iconClass = "fa-regular fa-cloud-bolt"
+            weatherPrefix = "stormy"
             break
     }
 
+    let timePeriod = getTime(timeString, dailyData)
+
+    document.body.className = `${weatherPrefix}-${timePeriod}`
     document.getElementById('weatherText').innerText = weatherDescription
     document.getElementById('weatherIcon').className = iconClass
+}
+
+//backgrounds
+
+function getTime(timeString, dailyData) {
+
+    let sunriseString = dailyData.sunrise[0]
+    let sunsetString = dailyData.sunset[0]
+
+    let currentTime = new Date(timeString).getTime()
+    let sunriseTime = new Date(sunriseString).getTime()
+    let sunsetTime = new Date(sunsetString).getTime()
+
+    let oneHour = 60 * 60 * 1000
+
+    if (currentTime >= (sunriseTime - oneHour) && currentTime < sunriseTime) {
+        return "predawn"
+    } else if (currentTime >= sunriseTime && currentTime < (sunriseTime + (oneHour * 2))) {
+        return "sunrise"
+    } else if (currentTime >= (sunriseTime + (oneHour * 2)) && currentTime < (sunsetTime - oneHour )) {
+        return "day"
+    } else if (currentTime >= (sunsetTime - oneHour) && currentTime <= (sunsetTime + oneHour)) {
+        return "sunset"
+    } else {
+        return "night"
+    }
+}
+
+//hourly weather
+
+function hourly(hourlyData, currentTimeString) {
+
+    let hourlyCountainer = document.querySelector('.hourly')
+    hourlyCountainer.innerHTML = ""
+
+    let startIndex = hourlyData.time.indexOf(currentTimeString)
+
+    if (startIndex === -1) startIndex = 0
+
+    for (let i = startIndex; i < startIndex + 5; i++) {
+        let timeFull = hourlyData.time[i]
+        let hour = timeFull.slice(11, 16)
+        let temp = hourlyData.temperature_2m[i]
+        let code = hourlyData.weathercode[i]
+        let isDay = hourlyData.is_day[i]
+        
+        let iconClass = getHourlyIcon(code, isDay)
+
+        let displayTime = (i === startIndex) ? "Now" : hour
+
+        let hourlyItem = `<div style= "text-align: center; min-width: 50px;">
+            <p>${displayTime}</p>
+            <p><i class="${iconClass}"></i></p>
+            <p>${temp}°C </p>
+            </div>`
+
+        hourlyCountainer.innerHTML += hourlyItem
+    }
+}
+
+// hourly weather icons
+
+function getHourlyIcon(code, isDay) {
+    switch (code) {
+        case 0:
+            return (isDay === 1) ? "fa-solid fa-sun" : "fa-solid fa-moon"
+            break
+        case 1:
+        case 2:
+            return (isDay === 1) ? "fa-solid fa-cloud-sun" : "fa-solid fa-cloud-moon"
+            break
+        case 3:
+            return "fa-solid fa-cloud"
+            break
+        case 45:
+        case 48:
+            return "fa-solid fa-smog"
+            break
+        case 51:
+        case 53:
+        case 55:
+            return "fa-solid fa-cloud-rain"
+            break
+        case 61:
+        case 63:
+        case 65:
+            return "fa-solid fa-cloud-showers-heavy"
+            break
+        case 71:
+        case 73:
+        case 75:
+            return "fa-regular fa-snowflake"
+            break
+        case 95:
+        case 96:
+        case 99:
+            return "fa-regular fa-cloud-bolt"
+            break
+        default:
+            return "fa-soid fa-cloud"
+            break
+    }
+}
+
+// daily weather
+
+function daily(dailyData) {
+
+    let dailyContainer = document.querySelector('.daily')
+    dailyContainer.innerHTML = ""
+
+    
 }
