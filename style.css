@@ -174,15 +174,14 @@ header > h1 {
     margin: 20px auto; 
     padding: 10px;
     border-radius: 5px;
-    height: 16vh;
+    height: auto;
     width: 80%;
     max-width: 500px;
     transition: 0.5s;
 
     display: flex;
-    gap: 20px;
-    align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
+    text-align: center;
 }
 
 .daily{
@@ -190,12 +189,20 @@ header > h1 {
     margin: 20px auto;
     padding: 10px;
     border-radius: 3px;
-    height: 50vh;
+    height: auto;
     width: 80%;
     max-width: 500px;
-    transition: 0.5s
+    transition: 0.5s;
 }
-
+.daily-item{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-content: space-evenly;
+    text-align: center;
+}
+.daily-item p {
+    margin: 5px 0px;
+}
 footer {
     text-align: center;
     padding: 6px;

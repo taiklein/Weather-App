@@ -31,13 +31,15 @@ if (shareLocation) {
         weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day, data.current_weather.time, data.daily)
 
         hourly(data.hourly, data.current_weather.time)
+
+        daily(data.daily)
     })
 
 } else {
     search.style.display = 'block'
 }
 
-//Searching Manually
+//searching manually
 
 async function searchWeather() {
     let inputElement = document.getElementById('city')
@@ -69,6 +71,8 @@ async function searchWeather() {
     weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day, data.current_weather.time, data.daily,)
 
     hourly(data.hourly, data.current_weather.time)
+
+    daily(data.daily)
 }
 
 // weather description and icons
@@ -243,7 +247,7 @@ function hourly(hourlyData, currentTimeString) {
 
         let displayTime = (i === startIndex) ? "Now" : hour
 
-        let hourlyItem = `<div style= "text-align: center; min-width: 50px;">
+        let hourlyItem = `<div>
             <p>${displayTime}</p>
             <p><i class="${iconClass}"></i></p>
             <p>${temp}°C </p>
@@ -304,5 +308,24 @@ function daily(dailyData) {
     let dailyContainer = document.querySelector('.daily')
     dailyContainer.innerHTML = ""
 
-    
+    for (let i = 0; i < dailyData.time.length; i++) {
+        let date = dailyData.time[i]
+        let maxTemp = Math.round(dailyData.temperature_2m_max[i])
+        let minTemp = Math.round(dailyData.temperature_2m_min[i])
+        let code = dailyData.weathercode[i]
+
+        let dateObj = new Date(date + "T00:00:00")
+        let weekday = dateObj.toLocaleDateString('en-US' , { weekday : 'short'})
+
+        let iconClass = getHourlyIcon(code, 1)
+
+        let dailyItem = `<div class = "daily-item">
+            <p>${weekday}</p>
+            <p><i class="${iconClass}"></i></p>
+            <p>${minTemp} °C / ${maxTemp} °C </p>
+            </div>
+        `
+
+        dailyContainer.innerHTML += dailyItem
+    }
 }
