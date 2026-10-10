@@ -4,24 +4,16 @@ const search = document.getElementById('search')
 
 async function getWeather(lat, lon) {
     search.style.display = 'none'    
-}
-
-if (shareLocation) {
-    search.style.display = 'none'
-
-    navigator.geolocation.getCurrentPosition(async (position) => {
-        let lat = position.coords.latitude
-        let lon = position.coords.longitude
 
 // reverse geocoding
 
-        let geoResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`)
-        let geoData = await geoResponse.json()
+        const geoResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`)
+        const geoData = await geoResponse.json()
 
 // get weather data
 
-        let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
-        let data = await response.json()
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
+        const data = await response.json()
 
         const tempElement = document.getElementById('temperature')
         tempElement.innerText = `${data.current_weather.temperature} °C`
@@ -37,8 +29,11 @@ if (shareLocation) {
         hourly(data.hourly, data.current_weather.time)
 
         daily(data.daily)
+        }
 
-        if (navigator.geolocation) {
+        if (shareLocation) {
+            search.style.display = 'none'
+
             navigator.geolocation.getCurrentPosition((position) => {
                 getWeather(position.coords.latitude, position.coords.longitude)
             }, (error) => {
@@ -51,36 +46,30 @@ if (shareLocation) {
         } else {
             search.style.display = 'block'
         }
-    })
-
-} else {
-    search.style.display = 'block'
-}
 
 //searching manually
 
 async function searchWeather() {
-    let inputElement = document.getElementById('city')
-    let cityName = inputElement.value
+    const inputElement = document.getElementById('city')
+    const cityName = inputElement.value
 
     if (!cityName) return
 
-    let geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${cityName}&count=1`)
-    let geoData = await geoResponse.json()
+    const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${cityName}&count=1`)
+    const geoData = await geoResponse.json()
 
     if (!geoData.results || geoData.results.length === 0) {
         alert("City not found!")
         return
     }
 
+    const lat = geoData.results[0].latitude
+    const lon = geoData.results[0].longitude
+    const realCityName = geoData.results[0].name
+    const realCountryName = geoData.results[0].country
 
-    let lat = geoData.results[0].latitude
-    let lon = geoData.results[0].longitude
-    let realCityName = geoData.results[0].name
-    let realCountryName = geoData.results[0].country
-
-    let response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
-    let data = await response.json()
+    const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
+    const data = await response.json()
 
     document.getElementById('temperature').innerText = `${data.current_weather.temperature} °C`
     document.getElementById('cityName').innerText = realCityName
@@ -94,7 +83,11 @@ async function searchWeather() {
 }
 
 function capitalizeWords(str) {
-    return str.replace(/b\w/g, char => char.toUpperCase())
+    const words = str.split("")
+    for (let i = 0; i < words.length; i++) {
+        words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1)
+    }
+    return words.join("")
 }
 
 // weather description and icons
@@ -216,7 +209,7 @@ function weatherDisplay(code, isDay, timeString, dailyData,){
 
     weatherDescription = capitalizeWords(weatherDescription)
 
-    let timePeriod = getTime(timeString, dailyData)
+    const timePeriod = getTime(timeString, dailyData)
 
     document.body.className = `${weatherPrefix}-${timePeriod}`
     document.getElementById('weatherText').innerText = weatherDescription
@@ -227,14 +220,14 @@ function weatherDisplay(code, isDay, timeString, dailyData,){
 
 function getTime(timeString, dailyData) {
 
-    let sunriseString = dailyData.sunrise[0]
-    let sunsetString = dailyData.sunset[0]
+    const sunriseString = dailyData.sunrise[0]
+    const sunsetString = dailyData.sunset[0]
 
-    let currentTime = new Date(timeString).getTime()
-    let sunriseTime = new Date(sunriseString).getTime()
-    let sunsetTime = new Date(sunsetString).getTime()
+    const currentTime = new Date(timeString).getTime()
+    const sunriseTime = new Date(sunriseString).getTime()
+    const sunsetTime = new Date(sunsetString).getTime()
 
-    let oneHour = 60 * 60 * 1000
+    const oneHour = 60 * 60 * 1000
 
     if (currentTime >= (sunriseTime - oneHour) && currentTime < sunriseTime) {
         return "predawn"
@@ -256,7 +249,7 @@ function hourly(hourlyData, currentWeatherTimne) {
     const hourlyCountainer = document.querySelector('.hourly')
     hourlyCountainer.innerHTML = ""
 
-    let startIndex = hourlyData.time.findIndex (time => time.slice(0, 13) === currentWeatherTimne.slice(0,13))
+    const startIndex = hourlyData.time.findIndex (time => time.slice(0, 13) === currentWeatherTimne.slice(0,13))
 
     if (startIndex === -1) {
         startIndex = hourlyData.time.findIndex(time => time >= currentWeatherTime)
@@ -334,7 +327,7 @@ function getHourlyIcon(code, isDay) {
 
 function daily(dailyData) {
 
-    let dailyContainer = document.querySelector('.daily')
+    const dailyContainer = document.querySelector('.daily')
     dailyContainer.innerHTML = ""
 
     for (let i = 0; i < dailyData.time.length; i++) {
@@ -343,8 +336,8 @@ function daily(dailyData) {
         const minTemp = Math.round(dailyData.temperature_2m_min[i])
         const code = dailyData.weathercode[i]
 
-        const dateObj = new Date(date + "T00:00:00")
-        const weekday = dateObj.toLocaleDateString(undefined, { weekday : 'short'})
+        let dateObj = new Date(date + "T00:00:00")
+        weekday = dateObj.toLocaleDateString(undefined, { weekday : 'short'})
 
         weekday = weekday.charAt(0).toUpperCase() + weekday.slice(1)
 
