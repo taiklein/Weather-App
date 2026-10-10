@@ -276,41 +276,32 @@ function getHourlyIcon(code, isDay) {
     switch (code) {
         case 0:
             return (isDay === 1) ? "fa-solid fa-sun" : "fa-solid fa-moon"
-            break
         case 1:
         case 2:
             return (isDay === 1) ? "fa-solid fa-cloud-sun" : "fa-solid fa-cloud-moon"
-            break
         case 3:
             return "fa-solid fa-cloud"
-            break
         case 45:
         case 48:
             return "fa-solid fa-smog"
-            break
         case 51:
         case 53:
         case 55:
             return "fa-solid fa-cloud-rain"
-            break
         case 61:
         case 63:
         case 65:
             return "fa-solid fa-cloud-showers-heavy"
-            break
         case 71:
         case 73:
         case 75:
-            return "fa-regular fa-snowflake"
-            break
+            return "fa-solid fa-snowflake"
         case 95:
         case 96:
         case 99:
-            return "fa-regular fa-cloud-bolt"
-            break
+            return "fa-solid fa-cloud-bolt"
         default:
-            return "fa-soid fa-cloud"
-            break
+            return "fa-solid fa-cloud"
     }
 }
 
