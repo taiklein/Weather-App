@@ -2,6 +2,10 @@ let shareLocation = confirm ('Allow this website to have access to your location
 
 const search = document.getElementById('search')
 
+async function getWeather(lat, lon) {
+    search.style.display = 'none'    
+}
+
 if (shareLocation) {
     search.style.display = 'none'
 
@@ -34,12 +38,18 @@ if (shareLocation) {
 
         daily(data.daily)
 
-        (error) => {
-            console.warn(`Geolocation error (${error.code}): ${error.message}`)
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                getWeather(position.coords.latitude, position.coords.longitude)
+            }, (error) => {
+                console.warn(`Geolocation error (${error.code}): ${error.message}`)
+                search.style.display = 'block'
+            }, {
+                timeout: 10000,
+                maximumAge: Infinity
+            })
+        } else {
             search.style.display = 'block'
-        }
-        {timeout: 10000
-            maximumAge: Infinity
         }
     })
 
@@ -84,7 +94,7 @@ async function searchWeather() {
 }
 
 function capitalizeWords(str) {
-    return str.replace(\/b\w/g, char => char.toUpperCase())
+    return str.replace(/b\w/g, char => char.toUpperCase())
 }
 
 // weather description and icons
