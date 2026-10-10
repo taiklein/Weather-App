@@ -227,27 +227,32 @@ function getTime(timeString, dailyData) {
 
 //hourly weather
 
-function hourly(hourlyData, currentTimeString) {
+function hourly(hourlyData, currentWeatherTimne) {
 
-    let hourlyCountainer = document.querySelector('.hourly')
+    const hourlyCountainer = document.querySelector('.hourly')
     hourlyCountainer.innerHTML = ""
 
-    let startIndex = hourlyData.time.indexOf(currentTimeString)
+    let startIndex = hourlyData.time.findIndex (time => time.slice(0, 13) === currentWeatherTimne.slice(0,13))
 
-    if (startIndex === -1) startIndex = 0
+    if (startIndex === -1) {
+        startIndex = hourlyData.time.findIndex(time => time >= currentWeatherTime)
+    }
 
-    for (let i = startIndex; i < startIndex + 5; i++) {
-        let timeFull = hourlyData.time[i]
-        let hour = timeFull.slice(11, 16)
-        let temp = hourlyData.temperature_2m[i]
-        let code = hourlyData.weathercode[i]
-        let isDay = hourlyData.is_day[i]
+    if (startIndex === -1) return
+
+    for (let i = startIndex; i < Math.min(startIndex + 5, hourlyData.time.length); i++) {
         
-        let iconClass = getHourlyIcon(code, isDay)
+        const timeFull = hourlyData.time[i]
+        const hour = timeFull.slice(11, 16)
+        const temp = hourlyData.temperature_2m[i]
+        const code = hourlyData.weathercode[i]
+        const isDay = hourlyData.is_day[i]
+        
+        const iconClass = getHourlyIcon(code, isDay)
 
-        let displayTime = (i === startIndex) ? "Now" : hour
+        const displayTime = (i === startIndex) ? "Now" : hour
 
-        let hourlyItem = `<div>
+        const hourlyItem = `<div>
             <p>${displayTime}</p>
             <p><i class="${iconClass}"></i></p>
             <p>${temp}°C </p>
@@ -309,17 +314,17 @@ function daily(dailyData) {
     dailyContainer.innerHTML = ""
 
     for (let i = 0; i < dailyData.time.length; i++) {
-        let date = dailyData.time[i]
-        let maxTemp = Math.round(dailyData.temperature_2m_max[i])
-        let minTemp = Math.round(dailyData.temperature_2m_min[i])
-        let code = dailyData.weathercode[i]
+        const date = dailyData.time[i]
+        const maxTemp = Math.round(dailyData.temperature_2m_max[i])
+        const minTemp = Math.round(dailyData.temperature_2m_min[i])
+        const code = dailyData.weathercode[i]
 
-        let dateObj = new Date(date + "T00:00:00")
-        let weekday = dateObj.toLocaleDateString('en-US' , { weekday : 'short'})
+        const dateObj = new Date(date + "T00:00:00")
+        const weekday = dateObj.toLocaleDateString('en-US' , { weekday : 'short'})
 
-        let iconClass = getHourlyIcon(code, 1)
+        const iconClass = getHourlyIcon(code, 1)
 
-        let dailyItem = `<div class = "daily-item">
+        const dailyItem = `<div class = "daily-item">
             <p>${weekday}</p>
             <p><i class="${iconClass}"></i></p>
             <p>${minTemp} °C / ${maxTemp} °C </p>
