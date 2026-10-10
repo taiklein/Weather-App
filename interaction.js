@@ -83,11 +83,7 @@ async function searchWeather() {
 }
 
 function capitalizeWords(str) {
-    const words = str.split("")
-    for (let i = 0; i < words.length; i++) {
-        words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1)
-    }
-    return words.join("")
+    return str.charAt(0).toUpperCase() + str.slice(1).toUpperCase()
 }
 
 // weather description and icons
@@ -336,10 +332,12 @@ function daily(dailyData) {
         const minTemp = Math.round(dailyData.temperature_2m_min[i])
         const code = dailyData.weathercode[i]
 
-        let dateObj = new Date(date + "T00:00:00")
-        weekday = dateObj.toLocaleDateString(undefined, { weekday : 'short'})
+        const dateObj = new Date(date + "T00:00:00")
 
-        weekday = weekday.charAt(0).toUpperCase() + weekday.slice(1)
+        const language = navigator.language
+
+        const weekday = new Intl.DateTimeFormat(language, {weekday: "short"})
+        format(dateObj)
 
         const iconClass = getHourlyIcon(code, 1)
 
