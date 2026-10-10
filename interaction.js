@@ -82,16 +82,13 @@ async function searchWeather() {
     daily(data.daily)
 }
 
-function capitalizeWords(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
-}
-
 // weather description and icons
 
 function weatherDisplay(code, isDay, timeString, dailyData,){
 
     let weatherDescription = ""
     let iconClass = ""
+    let weatherPrefix = ""
 
     switch (code) {
         case 0:
@@ -203,8 +200,6 @@ function weatherDisplay(code, isDay, timeString, dailyData,){
             break
     }
 
-    weatherDescription = capitalizeWords(weatherDescription)
-
     const timePeriod = getTime(timeString, dailyData)
 
     document.body.className = `${weatherPrefix}-${timePeriod}`
@@ -245,7 +240,7 @@ function hourly(hourlyData, currentWeatherTime) {
     const hourlyCountainer = document.querySelector('.hourly')
     hourlyCountainer.innerHTML = ""
 
-    let startIndex = hourlyData.time.findIndex (time => time.slice(0, 13) === currentWeatherTimne.slice(0,13))
+    let startIndex = hourlyData.time.findIndex (time => time.slice(0, 13) === currentWeatherTime.slice(0,13))
 
     if (startIndex === -1) {
         startIndex = hourlyData.time.findIndex(time => time >= currentWeatherTime)
@@ -333,7 +328,6 @@ function daily(dailyData) {
         const code = dailyData.weathercode[i]
 
         const dateObj = new Date(date + "T00:00:00")
-
         const language = navigator.language
 
         const weekday = new Intl.DateTimeFormat(language, {weekday: "short"}).format(dateObj)
