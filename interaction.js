@@ -33,6 +33,14 @@ if (shareLocation) {
         hourly(data.hourly, data.current_weather.time)
 
         daily(data.daily)
+
+        (error) => {
+            console.warn(`Geolocation error (${error.code}): ${error.message}`)
+            search.style.display = 'block'
+        }
+        {timeout: 10000
+            maximumAge: Infinity
+        }
     })
 
 } else {
