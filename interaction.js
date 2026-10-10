@@ -83,7 +83,7 @@ async function searchWeather() {
 }
 
 function capitalizeWords(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1).toUpperCase()
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 
 // weather description and icons
@@ -240,12 +240,12 @@ function getTime(timeString, dailyData) {
 
 //hourly weather
 
-function hourly(hourlyData, currentWeatherTimne) {
+function hourly(hourlyData, currentWeatherTime) {
 
     const hourlyCountainer = document.querySelector('.hourly')
     hourlyCountainer.innerHTML = ""
 
-    const startIndex = hourlyData.time.findIndex (time => time.slice(0, 13) === currentWeatherTimne.slice(0,13))
+    let startIndex = hourlyData.time.findIndex (time => time.slice(0, 13) === currentWeatherTimne.slice(0,13))
 
     if (startIndex === -1) {
         startIndex = hourlyData.time.findIndex(time => time >= currentWeatherTime)
@@ -336,8 +336,7 @@ function daily(dailyData) {
 
         const language = navigator.language
 
-        const weekday = new Intl.DateTimeFormat(language, {weekday: "short"})
-        format(dateObj)
+        const weekday = new Intl.DateTimeFormat(language, {weekday: "short"}).format(dateObj)
 
         const iconClass = getHourlyIcon(code, 1)
 
