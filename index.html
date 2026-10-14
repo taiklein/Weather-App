@@ -11,14 +11,18 @@
 </head>
 <body>
     <header>
-        <h1 id="temperature"></h1>
-        <p id="cityName"></p>
-        <p id="country"></p>
-        <i id="weatherIcon" class=""></i>
-        <p id="weatherText"></p>
-        <div id="search">
+        <h1 class="temperature"></h1>
+        <p class="cityName"></p>
+        <p class="country"></p>
+        <i class="weatherIcon"></i>
+        <p class="weatherText"></p>
+        <div class="search">
             <input type="text" name="city" id="city" placeholder="Search for a city">
             <button onclick="searchWeather()">Search</button>
+        </div>
+        <div class="loading" style="display: none;">
+            <p><i class="fa-solid fa-spinner fa-spin"></i></p> 
+            <p>Loading Weather...</p>
         </div>
     </header>
     <main>

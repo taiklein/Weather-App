@@ -1,34 +1,59 @@
 let shareLocation = confirm ('Allow this website to have access to your location?')
 
-const search = document.getElementById('search')
+const search = document.querySelector('.search')
+
+function showLoader() {
+    document.querySelector('.loading').style.display = 'flex'
+}
+
+function hideLoader() {
+    document.querySelector('.loading').style.display = 'none'
+}
 
 async function getWeather(lat, lon) {
-    search.style.display = 'none'    
+    search.style.display = 'none'
+    showLoader()    
 
 // reverse geocoding
+        try {
+            const geoResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`)
 
-        const geoResponse = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`)
-        const geoData = await geoResponse.json()
+            if (!geoResponse.ok) {
+                throw new Error('Failed to fetch location')
+            }
+
+            const geoData = await geoResponse.json()
 
 // get weather data
 
-        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
-        const data = await response.json()
+            const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
 
-        const tempElement = document.getElementById('temperature')
-        tempElement.innerText = `${data.current_weather.temperature} °C`
+            if (!response.ok) {
+                throw new Error('Failed to fetch weather')
+            }
+            const data = await response.json()
 
-        const cityElement = document.getElementById('cityName')
-        cityElement.innerText = geoData.city || geoData.locality || "My Location"
+            const tempElement = document.querySelector('.temperature')
+            tempElement.innerText = `${data.current_weather.temperature} °C`
 
-        const countryElement = document.getElementById('country')
-        countryElement.innerText = geoData.countryName
+            const cityElement = document.querySelector('.cityName')
+            cityElement.innerText = geoData.city || geoData.locality || "My Location"
 
-        weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day, data.current_weather.time, data.daily)
+            const countryElement = document.querySelector('.country')
+            countryElement.innerText = geoData.countryName
 
-        hourly(data.hourly, data.current_weather.time)
+            weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day, data.current_weather.time, data.daily)
 
-        daily(data.daily)
+            hourly(data.hourly, data.current_weather.time)
+
+            daily(data.daily)
+            } catch (error) {
+                console.error("Weather error:", error)
+                alert('Unable to load weather. Please try again.')
+                search.style.display = 'block'
+            } finally {
+                hideLoader()
+            }
         }
 
         if (shareLocation) {
@@ -55,31 +80,40 @@ async function searchWeather() {
 
     if (!cityName) return
 
-    const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${cityName}&count=1`)
-    const geoData = await geoResponse.json()
+    showLoader()
 
-    if (!geoData.results || geoData.results.length === 0) {
+    try {
+        const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${cityName}&count=1`)
+        const geoData = await geoResponse.json()
+
+        if (!geoData.results || geoData.results.length === 0) {
         alert("City not found!")
         return
+        }
+
+        const lat = geoData.results[0].latitude
+        const lon = geoData.results[0].longitude
+        const realCityName = geoData.results[0].name
+        const realCountryName = geoData.results[0].country
+
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
+        const data = await response.json()
+
+        document.querySelector('.temperature').innerText = `${data.current_weather.temperature} °C`
+        document.querySelector('.cityName').innerText = realCityName
+        document.querySelector('.country').innerText = realCountryName
+
+        weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day, data.current_weather.time, data.daily,)
+
+        hourly(data.hourly, data.current_weather.time)
+
+        daily(data.daily)
+    } catch (error) {
+        console.error("Search error:", error)
+        alert('Unable to search city. Please try again.')
+    } finally {
+        hideLoader()
     }
-
-    const lat = geoData.results[0].latitude
-    const lon = geoData.results[0].longitude
-    const realCityName = geoData.results[0].name
-    const realCountryName = geoData.results[0].country
-
-    const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
-    const data = await response.json()
-
-    document.getElementById('temperature').innerText = `${data.current_weather.temperature} °C`
-    document.getElementById('cityName').innerText = realCityName
-    document.getElementById('country').innerText = realCountryName
-
-    weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day, data.current_weather.time, data.daily,)
-
-    hourly(data.hourly, data.current_weather.time)
-
-    daily(data.daily)
 }
 
 // weather description and icons
@@ -203,8 +237,8 @@ function weatherDisplay(code, isDay, timeString, dailyData,){
     const timePeriod = getTime(timeString, dailyData)
 
     document.body.className = `${weatherPrefix}-${timePeriod}`
-    document.getElementById('weatherText').innerText = weatherDescription
-    document.getElementById('weatherIcon').className = iconClass
+    document.querySelector('.weatherText').innerText = weatherDescription
+    document.querySelector('.weatherIcon').className = iconClass
 }
 
 //backgrounds
