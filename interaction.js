@@ -76,14 +76,14 @@ async function getWeather(lat, lon) {
 
 async function searchWeather() {
     const inputElement = document.getElementById('city')
-    const cityName = inputElement.value
+    const cityName = inputElement.value.trim()
 
     if (!cityName) return
 
     showLoader()
 
     try {
-        const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${cityName}&count=1`)
+        const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`)
 
         if (!geoResponse.ok) {
             throw new Error('Failed to fetch location')
@@ -126,7 +126,7 @@ async function searchWeather() {
 
 // weather description and icons
 
-function weatherDisplay(code, isDay, timeString, dailyData,){
+function weatherDisplay(code, isDay, timeString, dailyData){
 
     let weatherDescription = ""
     let iconClass = ""
