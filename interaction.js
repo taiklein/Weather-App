@@ -111,7 +111,7 @@ async function searchWeather() {
         document.querySelector('.cityName').innerText = realCityName
         document.querySelector('.country').innerText = realCountryName
 
-        weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day, data.current_weather.time, data.daily,)
+        weatherDisplay(data.current_weather.weathercode, data.current_weather.is_day, data.current_weather.time, data.daily)
 
         hourly(data.hourly, data.current_weather.time)
 
