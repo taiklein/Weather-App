@@ -144,7 +144,7 @@ header > h1 {
 .country {
     font-size: 1.8em;
 }
-.weatherIcon {
+#iconWeather {
     font-size: 4em;
     padding: 8px 0px;
 }

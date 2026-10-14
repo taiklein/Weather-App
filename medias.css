@@ -19,7 +19,7 @@
     .country {
     font-size: 2.2em;
     }
-    .weatherIcon {
+    #iconWeather {
     font-size: 5em;
     }
     .weatherText {
@@ -52,7 +52,7 @@
     .country {
     font-size: 3em;
     }
-    .weatherIcon {
+    #iconWeather {
     font-size: 7em;
     }
     .weatherText {
