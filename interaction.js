@@ -75,8 +75,9 @@ async function getWeather(lat, lon) {
 //searching manually
 
 async function searchWeather() {
+
     const inputElement = document.getElementById('city')
-    const cityName = inputElement.value.trim()
+    const cityName = inputElement.value
 
     if (!cityName) return
 
@@ -118,7 +119,7 @@ async function searchWeather() {
         daily(data.daily)
     } catch (error) {
         console.error("Search error:", error)
-        alert('Unable to search city. Please try again.')
+        alert("Unable to search city. Please try again.")
     } finally {
         hideLoader()
     }
@@ -245,8 +246,16 @@ function weatherDisplay(code, isDay, timeString, dailyData){
     const timePeriod = getTime(timeString, dailyData)
 
     document.body.className = `${weatherPrefix}-${timePeriod}`
-    document.querySelector('.weatherText').innerText = weatherDescription
-    document.querySelector('.weatherIcon').className = iconClass
+    const weatherTextElement = document.querySelector('.weatherText')
+    const weatherIconElement = document.querySelector('.weatherIcon')
+
+    if (weatherTextElement) {
+        weatherTextElement.innerText = weatherDescription
+    }
+
+    if (weatherIconElement) {
+        weatherIconElement.className = iconClass
+    }
 }
 
 //backgrounds
@@ -282,7 +291,7 @@ function hourly(hourlyData, currentWeatherTime) {
     const hourlyCountainer = document.querySelector('.hourly')
     hourlyCountainer.innerHTML = ""
 
-    let startIndex = hourlyData.time.findIndex (time => time.slice(0, 13) === currentWeatherTime.slice(0,13))
+    let startIndex = hourlyData.time.findIndex (time => time.slice(0, 13) === currentWeatherTime.slice(0, 13))
 
     if (startIndex === -1) {
         startIndex = hourlyData.time.findIndex(time => time >= currentWeatherTime)
