@@ -84,6 +84,10 @@ async function searchWeather() {
 
     try {
         const geoResponse = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${cityName}&count=1`)
+
+        if (!geoResponse.ok) {
+            throw new Error('Failed to fetch location')
+        }
         const geoData = await geoResponse.json()
 
         if (!geoData.results || geoData.results.length === 0) {
@@ -97,6 +101,10 @@ async function searchWeather() {
         const realCountryName = geoData.results[0].country
 
         const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&daily=sunrise,sunset,weathercode,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,weathercode,is_day&timezone=auto`)
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch weather')
+        }
         const data = await response.json()
 
         document.querySelector('.temperature').innerText = `${data.current_weather.temperature} °C`
