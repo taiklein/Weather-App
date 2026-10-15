@@ -214,9 +214,9 @@ header > h1 {
 footer {
     text-align: center;
     padding: 6px;
-    font-size: 1em;
+    font-size: 0.9em;
     background-color: rgba(87, 87, 87, 0.25);
     margin: 10px auto;
-    width: 60%;
+    width: 55%;
     border-radius: 5px;
 }

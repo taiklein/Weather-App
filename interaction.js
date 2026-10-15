@@ -247,14 +247,14 @@ function weatherDisplay(code, isDay, timeString, dailyData){
 
     document.body.className = `${weatherPrefix}-${timePeriod}`
     const weatherTextElement = document.querySelector('.weatherText')
-    const weatherIconElement = document.querySelector('.weatherIcon')
+    const weatherIconElement = document.querySelector('#iconWeather')
 
     if (weatherTextElement) {
         weatherTextElement.innerText = weatherDescription
     }
 
     if (weatherIconElement) {
-        weatherIconElement.className = iconClass
+        weatherIconElement.className = `weatherIcon ${iconClass}`
     }
 }
 
