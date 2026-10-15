@@ -208,37 +208,37 @@ function weatherDisplay(code, isDay, timeString, dailyData){
 
         case 71:
             weatherDescription = "Light Snow"
-            iconClass = "fa-regular fa-snowflake"
+            iconClass = "fa-solid fa-snowflake"
             weatherPrefix = "snowy"
             break
 
         case 73:
             weatherDescription = "Snow"
-            iconClass = "fa-regular fa-snowflake"
+            iconClass = "fa-solid fa-snowflake"
             weatherPrefix = "snowy"
             break
 
         case 75:
             weatherDescription = "Heavy Snow"
-            iconClass = "fa-regular fa-snowflake"
+            iconClass = "fa-solid fa-snowflake"
             weatherPrefix = "snowy"
             break
 
         case 95:
             weatherDescription = "Thunderstorm"
-            iconClass = "fa-regular fa-cloud-bolt"
+            iconClass = "fa-solid fa-cloud-bolt"
             weatherPrefix = "stormy"
             break
 
         case 96:
             weatherDescription = "Thunderstorm with Light Hail"
-            iconClass = "fa-regular fa-cloud-bolt"
+            iconClass = "fa-solid fa-cloud-bolt"
             weatherPrefix = "stormy"
             break
 
         case 99:
             weatherDescription = "Thunderstorm with Heavy Hail"
-            iconClass = "fa-regular fa-cloud-bolt"
+            iconClass = "fa-solid fa-cloud-bolt"
             weatherPrefix = "stormy"
             break
     }
